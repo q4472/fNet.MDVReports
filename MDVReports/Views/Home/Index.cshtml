@@ -1,18 +1,17 @@
 ﻿@if (HttpContext.Current.IsDebuggingEnabled)
 {
-    <div>Debugging is enabled.</div>
+    <div>Configuration: Debug.</div>
 }
-<div id="fnet_empty_home_index">
-    <input type="button" value="Go to the new page" onclick="FnetSettingsHomeIndex.goTo();" />
-</div>
+else
+{
+    <div>Configuration: Release.</div>
+}
 <script type="text/javascript">
-    var FnetSettingsHomeIndex = (function () {
-        return {
-            goTo: function () {
-                //Nskd.Server.SessionId = '00000000-0000-0000-0000-000000000000';
-                Nskd.Client.EnvVars.selectedMenuNodeUrl = '/settings/f0/';
-                Nskd.Server.gotoTheNewPage(null, '#_layout_content');
-            }
-        };
-    })();
+    $(document).ready(
+        setTimeout(function () {
+            let xhr = $.post('/mdvreports/f0/', 'sessionId=00000000-0000-0000-0000-000000000000');
+            xhr.done(function (data) { $('#_layout_content').html(data); });
+            xhr.fail(function () { $('#_layout_content').html(xhr.responseText); });
+        }, 1000)
+    );
 </script>
