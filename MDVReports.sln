@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{338F70CC-203A-4C1B-AC66-661DBCF61806}") = "MDVReports", "MDVReports\MDVReports.csproj", "{281A8864-6F75-41EB-908C-0BA8E007EB98}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{281A8864-6F75-41EB-908C-0BA8E007EB98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{281A8864-6F75-41EB-908C-0BA8E007EB98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{281A8864-6F75-41EB-908C-0BA8E007EB98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{281A8864-6F75-41EB-908C-0BA8E007EB98}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E9DA4DDF-BD9A-4D6C-89BE-B856FFE3BE06}
+	EndGlobalSection
+EndGlobal
