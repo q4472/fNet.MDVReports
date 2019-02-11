@@ -11,6 +11,11 @@ namespace FNet
 
             routes.MapRoute(
                 name: null,
+                url: "mdvreports/f0/{*pathInfo}",
+                defaults: new { controller = "F0", action = "Index" });
+
+            routes.MapRoute(
+                name: null,
                 url: "{*pathInfo}",
                 defaults: new { controller = "Home", action = "Index" });
         }
