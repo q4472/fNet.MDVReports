@@ -1,30 +1,148 @@
-﻿<style type="text/css">
-    #mdvreports_views_f0_index table th {
-        padding: 2px;
-        border: 1px solid black;
-        font-weight: bold;
+﻿@using FNet.MDVReports.Models;
+@model F0Model
+<style type="text/css">
+    #mdvreports_views_f0_index {
+        font-size: 10pt;
     }
-    #mdvreports_views_f0_index table td {
-        padding: 2px;
-        border: 1px solid black;
-    }
+
+        #mdvreports_views_f0_index th {
+            padding: 2px;
+            border: 1px solid black;
+            font-weight: bold;
+        }
+
+        #mdvreports_views_f0_index td {
+            padding: 2px;
+            border-right: 1px solid black;
+            border-bottom: 1px solid black;
+        }
+
+            #mdvreports_views_f0_index td:first-child {
+                border-left: 1px solid black;
+            }
+
+        #mdvreports_views_f0_index div.layout-c1 {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 300px;
+            overflow: auto;
+        }
+
+            #mdvreports_views_f0_index div.layout-c1 div.layout-c1r1 {
+                width: 300px;
+                height: 396px;
+            }
+
+                #mdvreports_views_f0_index div.layout-c1 div.layout-c1r1 table {
+                    margin: 2px;
+                    width: 296px;
+                }
+
+            #mdvreports_views_f0_index div.layout-c1 div.layout-c1r2 {
+                width: 300px;
+                border-top: 2px solid #004400;
+            }
+
+                #mdvreports_views_f0_index div.layout-c1 div.layout-c1r2 table {
+                    margin: 2px;
+                    width: 296px;
+                }
+
+        #mdvreports_views_f0_index div.layout-c2 {
+            position: absolute;
+            left: 300px;
+            top: 0;
+            bottom: 0;
+            border-left: 2px solid #004400;
+        }
+
+            #mdvreports_views_f0_index div.layout-c2 div.layout-c2r1 {
+                height: 100%;
+                overflow: auto;
+            }
+
+                #mdvreports_views_f0_index div.layout-c2 div.layout-c2r1 table {
+                    margin: 2px;
+                }
 </style>
+
 <div id="mdvreports_views_f0_index">
-    <table>
-        <tr>
-            <th>Наименование</th>
-            <th>Кол-во в заявке</th>
-            <th>Кол-во в спецификации</th>
-            <th>Кол-во в накладных 1С</th>
-            <th>Кол-во к отгрузке</th>
-            <th>Менеджер</th>
-            <th>Контракт</th>
-            <th>Дата окончания котракта</th>
-            <th>Аукцион</th>
-            <th>Заказчик</th>
-        </tr>
-        <tr>
-            <td>qsssssssssssssssssss sssssssssssssssssss fggggggggggggggggggg jjjjjjjjjjjjjjj</td>
-        </tr>
-    </table>
+    <div class="layout-c1">
+        <div class="layout-c1r1">
+            <table><tr><th>Фильтр</th></tr></table>
+        </div>
+        <div class="layout-c1r2">
+            <table>
+                <tr><th>Команды</th></tr>
+                <tr>
+                    <td><input type="button" value="Выгрузить в Excel" /></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="layout-c2">
+        <div class="layout-c2r1">
+            <table>
+                <colgroup>
+                    <col width="60" />
+                    <col width="100" />
+                    <col width="60" />
+                    <col width="700" />
+                    <col width="80" />
+                    <col width="80" />
+                    <col width="80" />
+                </colgroup>
+                <tr>
+                    <th colspan="3">Менеджер</th>
+                    <th>Заказчик</th>
+                    <th colspan="3">Аукцион</th>
+                </tr>
+                <tr>
+                    <th>Номер в списке</th>
+                    <th>Код группы</th>
+                    <th>Номер в группе</th>
+                    <th>Наименование</th>
+                    <th>Кол-во в спец.</th>
+                    <th>Кол-во в накладных 1С</th>
+                    <th>Кол-во к отгрузке</th>
+                </tr>
+                @{
+                    F0Model.FilteredData.ItemArray currRow = null;
+                    F0Model.FilteredData.ItemArray prevRow = null;
+                }
+                @for (int ri = 0; ri < Model.Data.RowsCount; ri++)
+                {
+                    currRow = Model.Data[ri];
+                    if (prevRow != null && prevRow.группа != currRow.группа)
+                    {
+                        <tr>
+                            <td></td>
+                            <td style="background-color: #ffffaa;">@prevRow.группа.Substring(0, 8)</td>
+                            <td colspan="4"></td>
+                            <td style="text-align: right; background-color: #@((prevRow.количество_к_отгрузке == "0")? "ffffaa" : "ffaaaa") ;">@prevRow.количество_к_отгрузке</td>
+                        </tr>
+                    }
+                    if (prevRow == null || prevRow.аукцион != currRow.аукцион || prevRow.заказчик != currRow.заказчик)
+                    {
+                        <tr style="background-color: #aaffff;">
+                            <td colspan="3">@currRow.менеджер</td>
+                            <td>@currRow.заказчик</td>
+                            <td colspan="3">@currRow.аукцион</td>
+                        </tr>
+                    }
+                    <tr>
+                        <td style="text-align: right;">@currRow.номер_в_списке</td>
+                        <td>@currRow.группа.Substring(0, 8)</td>
+                        <td style="text-align: right;">@currRow.номер_в_группе</td>
+                        <td>@currRow.наименование</td>
+                        <td style="text-align: right;">@currRow.количество_в_спецификации</td>
+                        <td style="text-align: right;">@currRow.количество_в_накладных_1С</td>
+                        <td style="text-align: right;"></td>
+                    </tr>
+                    prevRow = currRow;
+                }
+            </table>
+        </div>
+    </div>
 </div>

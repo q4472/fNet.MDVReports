@@ -47,6 +47,9 @@ namespace FNet.MDVReports.Models
             public Int32 RowsCount { get => (dt == null) ? 0 : dt.Rows.Count; }
             public class ItemArray
             {
+                public String номер_в_списке;
+                public String группа;
+                public String номер_в_группе;
                 public String наименование;
                 public String количество_в_заявке;
                 public String количество_в_спецификации;
@@ -57,6 +60,7 @@ namespace FNet.MDVReports.Models
                 public String дата_окончания_котракта;
                 public String аукцион;
                 public String заказчик;
+
                 public String this[String fieldName]
                 {
                     get
@@ -104,6 +108,9 @@ namespace FNet.MDVReports.Models
                         DataRow dr = dt.Rows[index];
                         items = new ItemArray
                         {
+                            номер_в_списке = ConvertToString(dr["номер_в_списке"]),
+                            группа = ConvertToString(dr["группа"]),
+                            номер_в_группе = ConvertToString(dr["номер_в_группе"]),
                             наименование = ConvertToString(dr["наименование"]),
                             количество_в_заявке = ConvertToString(dr["количество_в_заявке"]),
                             количество_в_спецификации = ConvertToString(dr["количество_в_спецификации"]),
@@ -138,6 +145,9 @@ namespace FNet.MDVReports.Models
                             break;
                         case "System.String":
                             s = (String)v;
+                            break;
+                        case "System.Decimal":
+                            s = ((Decimal)v).ToString("n0");
                             break;
                         default:
                             s = tfn;
