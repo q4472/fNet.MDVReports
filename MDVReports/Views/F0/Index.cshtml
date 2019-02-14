@@ -66,7 +66,6 @@
                     margin: 2px;
                 }
 </style>
-
 <div id="mdvreports_views_f0_index">
     <div class="layout-c1">
         <div class="layout-c1r1">
@@ -76,7 +75,7 @@
             <table>
                 <tr><th>Команды</th></tr>
                 <tr>
-                    <td><input type="button" value="Выгрузить в Excel" /></td>
+                    <td><input type="button" value="Выгрузить в Excel" onclick="MDVReportsViewsF0Index.downloadExel(this);" /></td>
                 </tr>
             </table>
         </div>
@@ -146,3 +145,29 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    var MDVReportsViewsF0Index = (function () {
+        return {
+            downloadExel: function (e) {
+                let $e = $(e);
+                $e.prop('disabled', true);
+                setTimeout(function () { $e.prop('disabled', false); }, 3000);
+                let rqp = {
+                    SessionId: Nskd.Server.SessionId,
+                    Command: 'MDVReports.F0.DownloadExel'
+                };
+                //console.log(rqp);
+                Nskd.Http.post({
+                    url: '/mdvreports/f0/downloadexel',
+                    rqp: rqp,
+                    done: function (data) {
+                        console.log(data);
+                    },
+                    fail: function (data) {
+                        console.log(data);
+                    }
+                });
+            }
+        };
+    })();
+</script>

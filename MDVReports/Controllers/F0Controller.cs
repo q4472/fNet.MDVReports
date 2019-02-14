@@ -42,5 +42,10 @@ namespace FNet.MDVReports.Controllers
             v = PartialView("~/Views/F0/Index.cshtml", m);
             return v;
         }
+        public Object DownloadExel()
+        {
+            Object v = "FNet.MDVReports.Controllers.F0Controller.DownloadExel()";
+            return v;
+        }
     }
 }
