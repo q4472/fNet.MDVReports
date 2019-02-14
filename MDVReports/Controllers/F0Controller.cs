@@ -42,9 +42,15 @@ namespace FNet.MDVReports.Controllers
             v = PartialView("~/Views/F0/Index.cshtml", m);
             return v;
         }
-        public Object DownloadExel()
+        public Object DownloadExcelFile()
         {
-            Object v = "FNet.MDVReports.Controllers.F0Controller.DownloadExel()";
+            Object v = "FNet.MDVReports.Controllers.F0Controller.DownloadExelFile()";
+            RequestPackage rqp = new RequestPackage { SessionId = new Guid() };
+            F0Model m = new F0Model(rqp);
+            Byte[] buff = NskdExcel.ToExcel(m.Data);
+            String fileName = "MDVReport1 " + DateTime.Now.ToString("yyyy-MM-dd HH:mm") + ".xlsx";
+            FileContentResult fcr = File(buff, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+            v = fcr;
             return v;
         }
     }

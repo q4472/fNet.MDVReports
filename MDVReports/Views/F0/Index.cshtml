@@ -147,18 +147,41 @@
 </div>
 <script type="text/javascript">
     var MDVReportsViewsF0Index = (function () {
+        function downloadExelFile() {
+            var body = $(document.body);
+            var guid = Nskd.Js.guid();
+
+            var iframe = $('<iframe name="' + guid + '" style="display: none;" />');
+            iframe.appendTo(body);
+
+            var form = $('<form ' +
+                'method="post" ' +
+                'action="/mdvreports/f0/downloadexcelfile/' + Math.floor(Math.random() * 1000000000) + '" ' +
+                'target="' + guid + '" ' +
+                'enctype="multipart/form-data" ' +
+                'style="display: none;" ' +
+                'onsubmit="return false;"' +
+                '></form>');
+            form.appendTo(body);
+
+            form[0].submit();
+            body[0].removeChild(form[0]);
+            form[0] = null;
+        }
         return {
             downloadExel: function (e) {
                 let $e = $(e);
                 $e.prop('disabled', true);
                 setTimeout(function () { $e.prop('disabled', false); }, 3000);
+                downloadExelFile();
+                /*
                 let rqp = {
                     SessionId: Nskd.Server.SessionId,
                     Command: 'MDVReports.F0.DownloadExel'
                 };
                 //console.log(rqp);
                 Nskd.Http.post({
-                    url: '/mdvreports/f0/downloadexel',
+                    url: '/mdvreports/f0/downloadexcelfile',
                     rqp: rqp,
                     done: function (data) {
                         console.log(data);
@@ -167,6 +190,7 @@
                         console.log(data);
                     }
                 });
+                */
             }
         };
     })();
