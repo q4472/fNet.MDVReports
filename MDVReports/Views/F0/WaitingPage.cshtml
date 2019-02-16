@@ -1,0 +1,23 @@
+﻿<style type="text/css">
+    #fnet_mdvreports_views_f0_waitingpage {
+        font-size: 12pt;
+    }
+</style>
+<div id="fnet_mdvreports_views_f0_waitingpage">
+    <span>Формируется отчёт. Пожалуйста, подождите. </span><span class="cnt"></span>
+</div>
+<script type="text/javascript">
+    var MDVReportsViewsF0WaitingPage = (function () {
+        let cnt = 0;
+        c();
+        Nskd.Http.post({
+            url: '/mdvreports/f0',
+            rqp: { SessionId: Nskd.Server.SessionId },
+            done: function (data) { $('#_layout_content').html(data); }
+        });
+        function c() {
+            $('#fnet_mdvreports_views_f0_waitingpage span.cnt').text(cnt++);
+            if (cnt < 1000) setTimeout(c, 1000);
+        }
+    })();
+</script>

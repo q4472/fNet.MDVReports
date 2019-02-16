@@ -252,6 +252,7 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\LeftSection.cshtml" />
     <Content Include="Views\F0\Index.cshtml" />
+    <Content Include="Views\F0\WaitingPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
