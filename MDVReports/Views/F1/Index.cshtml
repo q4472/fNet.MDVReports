@@ -1,0 +1,44 @@
+﻿@using System.Data
+@model DataTable
+<style>
+    #mdvreports_views_f1_index table {
+        margin: 2px;
+    }
+
+    #mdvreports_views_f1_index tr {
+        border: 1px solid black;
+    }
+
+    #mdvreports_views_f1_index td {
+        padding: 2px;
+    }
+
+    #mdvreports_views_f1_index .need-to-refresh {
+        background-color: #faa;
+    }
+</style>
+<div id="mdvreports_views_f1_index">
+    <table>
+        <colgroup>
+            <col width="700" />
+        </colgroup>
+        @foreach (DataRow dr in Model.Rows)
+        {
+            Object dateFile = dr[2];
+            Object dateGrls = dr[3];
+            String dateFileAsString = (dateFile == DBNull.Value) ? "" : ((DateTime)dateFile).ToString("dd.MM.yyyy");
+            String dateGrlsAsString = (dateGrls == DBNull.Value) ? "" : ((DateTime)dateGrls).ToString("dd.MM.yyyy");
+            Boolean needToRefresh = false;
+            if (dateFile != DBNull.Value && dateGrls != DBNull.Value)
+            {
+                needToRefresh = ((DateTime)dateFile < (DateTime)dateGrls);
+            }
+            <tr class="@(needToRefresh ? "need-to-refresh" : "")">
+                <td>@dr[0]</td>
+                <td>@dr[1]</td>
+                <td>@(dateFileAsString)</td>
+                <td>@(dateGrlsAsString)</td>
+            </tr>
+        }
+    </table>
+</div>

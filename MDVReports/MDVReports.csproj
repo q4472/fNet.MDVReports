@@ -254,10 +254,10 @@
     <Content Include="Views\Shared\LeftSection.cshtml" />
     <Content Include="Views\F0\Index.cshtml" />
     <Content Include="Views\F0\WaitingPage.cshtml" />
+    <Content Include="Views\F1\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\F1\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
