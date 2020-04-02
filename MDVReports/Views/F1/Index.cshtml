@@ -19,14 +19,14 @@
     }
 
     #mdvreports_views_f1_index .need-to-refresh {
-        background-color: #faa;
+        background-color: #fbb;
     }
 </style>
 <div id="mdvreports_views_f1_index">
     <table>
         <colgroup>
             <col width="640" />
-            <col width="100" />
+            <col width="120" />
             <col width="80" />
             <col width="80" />
         </colgroup>
@@ -36,23 +36,17 @@
             <th>Дата FILE</th>
             <th>Дата GRLS</th>
         </tr>
-        @foreach (DataRow dr in Model.Rows)
+        @if (Model != null)
         {
-            Object dateFile = dr[2];
-            Object dateGrls = dr[3];
-            String dateFileAsString = (dateFile == DBNull.Value) ? "" : ((DateTime)dateFile).ToString("dd.MM.yyyy");
-            String dateGrlsAsString = (dateGrls == DBNull.Value) ? "" : ((DateTime)dateGrls).ToString("dd.MM.yyyy");
-            Boolean needToRefresh = false;
-            if (dateFile != DBNull.Value && dateGrls != DBNull.Value)
+            foreach (DataRow dr in Model.Rows)
             {
-                needToRefresh = ((DateTime)dateFile < (DateTime)dateGrls);
+                <tr class="@((Boolean)dr[4] ? "need-to-refresh" : "")">
+                    <td>@dr[0]</td>
+                    <td>@dr[1]</td>
+                    <td>@dr[2]</td>
+                    <td>@dr[3]</td>
+                </tr>
             }
-            <tr class="@(needToRefresh ? "need-to-refresh" : "")">
-                <td>@dr[0]</td>
-                <td>@dr[1]</td>
-                <td>@(dateFileAsString)</td>
-                <td>@(dateGrlsAsString)</td>
-            </tr>
         }
     </table>
 </div>
