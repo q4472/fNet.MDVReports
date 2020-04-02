@@ -9,8 +9,13 @@
         border: 1px solid black;
     }
 
+    #mdvreports_views_f1_index th {
+        padding: 3px;
+        font-weight: bold;
+    }
+
     #mdvreports_views_f1_index td {
-        padding: 2px;
+        padding: 3px;
     }
 
     #mdvreports_views_f1_index .need-to-refresh {
@@ -20,8 +25,17 @@
 <div id="mdvreports_views_f1_index">
     <table>
         <colgroup>
-            <col width="700" />
+            <col width="640" />
+            <col width="100" />
+            <col width="80" />
+            <col width="80" />
         </colgroup>
+        <tr>
+            <th>Ссылка</th>
+            <th>Номер</th>
+            <th>Дата FILE</th>
+            <th>Дата GRLS</th>
+        </tr>
         @foreach (DataRow dr in Model.Rows)
         {
             Object dateFile = dr[2];

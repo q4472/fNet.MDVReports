@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
-using System.Text;
 using System.Web.Mvc;
 
 namespace FNet.Settings.Controllers
@@ -16,7 +15,7 @@ namespace FNet.Settings.Controllers
             SqlCommand cmd = new SqlCommand()
             {
                 Connection = cn,
-                CommandType = System.Data.CommandType.StoredProcedure,
+                CommandType = CommandType.StoredProcedure,
                 CommandText = "[Ссылки на РУ сравнение дат]"
             };
             SqlDataAdapter da = new SqlDataAdapter(cmd);
