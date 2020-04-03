@@ -1,9 +1,13 @@
 ﻿@using System.Data
-@model DataTable
+@model FNet.Settings.Models.F1Model
 <style>
     #mdvreports_views_f1_index table {
         margin: 2px;
     }
+
+        #mdvreports_views_f1_index table.header {
+            font-weight: bold;
+        }
 
     #mdvreports_views_f1_index tr {
         border: 1px solid black;
@@ -23,6 +27,17 @@
     }
 </style>
 <div id="mdvreports_views_f1_index">
+    <div>
+        <table class="header">
+            <tr>
+                <td>Всего: </td>
+                <td>@Model.TotalRowsCount</td>
+                <td>Надо обновить: </td>
+                <td>@Model.NeedToRefreshRowsCount</td>
+                <td><input type="button" value="Экспорт в Excel" /></td>
+            </tr>
+        </table>
+    </div>
     <table>
         <colgroup>
             <col width="640" />
@@ -38,7 +53,7 @@
         </tr>
         @if (Model != null)
         {
-            foreach (DataRow dr in Model.Rows)
+            foreach (DataRow dr in Model.Data.Rows)
             {
                 <tr class="@((Boolean)dr[4] ? "need-to-refresh" : "")">
                     <td>@dr[0]</td>

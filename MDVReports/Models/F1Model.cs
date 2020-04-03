@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Nskd;
+using System;
 using System.Data;
-using System.Data.SqlClient;
 
 namespace FNet.Settings.Models
 {
@@ -8,26 +8,28 @@ namespace FNet.Settings.Models
     {
         public DataTable Data;
         public String Status;
-        public F1Model()
+        public Int32 TotalRowsCount;
+        public Int32 NeedToRefreshRowsCount;
+        public F1Model(Guid sessionId)
         {
             Status = "FNet.Settings.Models.F1Model(): ";
-            String cnString = "Data Source=192.168.135.14;Initial Catalog=Grls;Integrated Security=True";
-            SqlConnection cn = new SqlConnection(cnString);
-            SqlCommand cmd = new SqlCommand()
-            {
-                Connection = cn,
-                CommandType = CommandType.StoredProcedure,
-                CommandText = "[Ссылки на РУ сравнение дат]"
-            };
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
+
             DataTable dt = new DataTable();
-            try
+
+            RequestPackage rqp = new RequestPackage()
             {
-                da.Fill(dt);
-                Data = dt;
+                SessionId = sessionId,
+                Command = "[Grls].[dbo].[Ссылки на РУ сравнение дат]",
+                Parameters = new RequestParameter[]
+                {
+                    new RequestParameter() { Name = "session_id", Value = sessionId }
+                }
+            };
+            ResponsePackage rsp = rqp.GetResponse("http://127.0.0.1:11012");
+            if (rsp != null)
+            {
+                dt = rsp.GetFirstTable();
             }
-            catch (Exception e) { Status += $"Error: {e.Message}"; }
-            Status += "OK.";
 
             Data = new DataTable();
             Data.Columns.Add("Ссылка", typeof(String));
@@ -36,6 +38,8 @@ namespace FNet.Settings.Models
             Data.Columns.Add("Дата GRLS", typeof(String));
             Data.Columns.Add("needToRefresh", typeof(Boolean));
 
+            TotalRowsCount = dt.Rows.Count;
+            NeedToRefreshRowsCount = 0;
             foreach(DataRow dr in dt.Rows)
             {
                 String dr0 = dr[0] as String;
@@ -51,9 +55,10 @@ namespace FNet.Settings.Models
                 String dateGrlsAsString = (dateGrls == DBNull.Value) ? "" : ((DateTime)dateGrls).ToString("dd.MM.yyyy");
 
                 Boolean needToRefresh = false;
-                if (dateFile != DBNull.Value && dateGrls != DBNull.Value)
+                if (dateFile != DBNull.Value && dateGrls != DBNull.Value && (DateTime)dateFile < (DateTime)dateGrls)
                 {
-                    needToRefresh = ((DateTime)dateFile < (DateTime)dateGrls);
+                    needToRefresh = true;
+                    NeedToRefreshRowsCount++;
                 }
 
                 Data.Rows.Add(new Object[] { 
