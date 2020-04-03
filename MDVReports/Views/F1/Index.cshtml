@@ -1,13 +1,9 @@
 ﻿@using System.Data
-@model FNet.Settings.Models.F1Model
+@model FNet.MDVReports.Models.F1Model
 <style>
     #mdvreports_views_f1_index table {
         margin: 2px;
     }
-
-        #mdvreports_views_f1_index table.header {
-            font-weight: bold;
-        }
 
     #mdvreports_views_f1_index tr {
         border: 1px solid black;
@@ -27,41 +23,80 @@
     }
 </style>
 <div id="mdvreports_views_f1_index">
-    <div>
-        <table class="header">
+    <div class="header">
+        <table>
             <tr>
-                <td>Всего: </td>
-                <td>@Model.TotalRowsCount</td>
-                <td>Надо обновить: </td>
-                <td>@Model.NeedToRefreshRowsCount</td>
-                <td><input type="button" value="Экспорт в Excel" /></td>
+                <th>Всего: </th>
+                <th>@Model.TotalRowsCount</th>
+                <th>&nbsp;&nbsp;&nbsp;</th>
+                <th>Надо обновить: </th>
+                <th>@Model.NeedToRefreshRowsCount</th>
+                <th>&nbsp;&nbsp;&nbsp;</th>
+                <th><input type="button" value="Экспорт в Excel" /></th>
             </tr>
         </table>
     </div>
-    <table>
-        <colgroup>
-            <col width="640" />
-            <col width="120" />
-            <col width="80" />
-            <col width="80" />
-        </colgroup>
-        <tr>
-            <th>Ссылка</th>
-            <th>Номер</th>
-            <th>Дата FILE</th>
-            <th>Дата GRLS</th>
-        </tr>
-        @if (Model != null)
-        {
-            foreach (DataRow dr in Model.Data.Rows)
+    <div class="content">
+        <table>
+            <colgroup>
+                <col width="640" />
+                <col width="120" />
+                <col width="80" />
+                <col width="80" />
+            </colgroup>
+            <tr>
+                <th>Ссылка</th>
+                <th>Номер</th>
+                <th>Дата FILE</th>
+                <th>Дата GRLS</th>
+            </tr>
+            @if (Model != null)
             {
-                <tr class="@((Boolean)dr[4] ? "need-to-refresh" : "")">
-                    <td>@dr[0]</td>
-                    <td>@dr[1]</td>
-                    <td>@dr[2]</td>
-                    <td>@dr[3]</td>
-                </tr>
+                foreach (DataRow dr in Model.Data.Rows)
+                {
+                    <tr class="@((Boolean)dr[4] ? "need-to-refresh" : "")">
+                        <td>@dr[0]</td>
+                        <td>@dr[1]</td>
+                        <td>@dr[2]</td>
+                        <td>@dr[3]</td>
+                    </tr>
+                }
             }
-        }
-    </table>
+        </table>
+    </div>
 </div>
+<script>
+    var MDVReportsViewsF1Index = (function () {
+        let mainDiv = $('div#mdvreports_views_f1_index');
+        let headerDiv = mainDiv.find('div.header');
+        headerDiv.find('input[type="button"]').click(function () {
+            MDVReportsViewsF1Index.exportToExcel();
+        });
+        function downloadExelFile() {
+            var body = $(document.body);
+            var guid = Nskd.Js.guid();
+
+            var iframe = $('<iframe name="' + guid + '" style="display: none;" />');
+            iframe.appendTo(body);
+
+            var form = $('<form ' +
+                'method="post" ' +
+                'action="/mdvreports/f1/downloadexcelfile/' + Math.floor(Math.random() * 1000000000) + '" ' +
+                'target="' + guid + '" ' +
+                'enctype="multipart/form-data" ' +
+                'style="display: none;" ' +
+                'onsubmit="return false;"' +
+                '></form>');
+            form.appendTo(body);
+
+            form[0].submit();
+            body[0].removeChild(form[0]);
+            form[0] = null;
+        }
+        return {
+            exportToExcel: function () {
+                downloadExelFile();
+            }
+        };
+    })();
+</script>
