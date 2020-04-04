@@ -33,15 +33,33 @@ namespace FNet.MDVReports.Models
             }
 
             Data = new DataTable();
-            Data.Columns.Add("Ссылка", typeof(String));
-            Data.Columns.Add("Номер", typeof(String));
-            Data.Columns.Add("Дата FILE", typeof(String));
-            Data.Columns.Add("Дата GRLS", typeof(String));
-            Data.Columns.Add("needToRefresh", typeof(Boolean));
+
+            // Data Columns
+            {
+                DataColumn dc0 = Data.Columns.Add("Ссылка", typeof(String));
+                dc0.Caption = "Ссылка";
+                dc0.ExtendedProperties.Add("Width", 120d);
+
+                DataColumn dc1 = Data.Columns.Add("Номер", typeof(String));
+                dc1.Caption = "Номер";
+                dc1.ExtendedProperties.Add("Width", 20d);
+
+                DataColumn dc2 = Data.Columns.Add("Дата FILE", typeof(String));
+                dc2.Caption = "Дата FILE";
+                dc2.ExtendedProperties.Add("Width", 14d);
+
+                DataColumn dc3 = Data.Columns.Add("Дата GRLS", typeof(String));
+                dc3.Caption = "Дата GRLS";
+                dc3.ExtendedProperties.Add("Width", 14d);
+
+                DataColumn dc4 = Data.Columns.Add("Обновить", typeof(String));
+                dc4.Caption = "Обновить";
+                dc4.ExtendedProperties.Add("Width", 7d);
+            }
 
             TotalRowsCount = dt.Rows.Count;
             NeedToRefreshRowsCount = 0;
-            foreach(DataRow dr in dt.Rows)
+            foreach (DataRow dr in dt.Rows)
             {
                 String dr0 = dr[0] as String;
                 if (dr0 == null) dr0 = String.Empty;
@@ -62,36 +80,18 @@ namespace FNet.MDVReports.Models
                     NeedToRefreshRowsCount++;
                 }
 
-                Data.Rows.Add(new Object[] { 
+                Data.Rows.Add(new Object[] {
                     dr0,
                     dr1,
                     dateFileAsString,
                     dateGrlsAsString,
-                    needToRefresh
+                    (needToRefresh ? "v" : "")
                 });
             }
         }
     }
     public static class NskdExcel1
     {
-        private static class Md
-        {
-            public class TableColumn
-            {
-                public String ColumnName;
-                public String Caption;
-                public Type DataType;
-                public String Width;
-            }
-            public static TableColumn[] Table1Columns = new TableColumn[]
-            {
-                    new TableColumn { ColumnName = "Ссылка", Caption = "Ссылка", DataType = typeof(String), Width = "120" }, // 0 A
-                    new TableColumn { ColumnName = "Номер", Caption = "Номер", DataType = typeof(String), Width = "20" }, // 1 B
-                    new TableColumn { ColumnName = "Дата FILE", Caption = "Дата FILE", DataType = typeof(String), Width = "14" }, // 2 C
-                    new TableColumn { ColumnName = "Дата GRLS", Caption = "Дата GRLS", DataType = typeof(String), Width = "14" }, // 3 D
-                    new TableColumn { ColumnName = "needToRefresh", Caption = "", DataType = typeof(Boolean), Width = "7" } // 4 E
-            };
-        }
         private static String GetColumnName(UInt32 index) // zero-based
         {
             const byte BASE = 'Z' - 'A' + 1;
@@ -104,7 +104,8 @@ namespace FNet.MDVReports.Models
             while (index-- > 0);
             return name;
         }
-        public static Byte[] ToExcel(DataTable data)
+        
+        public static Byte[] ToExcel(DataTable dt)
         {
             MemoryStream ms;
             UInt32 zoomScale = 100;
@@ -121,43 +122,44 @@ namespace FNet.MDVReports.Models
 
                 XlWorksheet[] wss = spreadsheet.Wss;
 
-                GenerateColumns(wss[0], Md.Table1Columns);
-                GenrateSheetData0(wss[0], data);
+                GenerateColumns(wss[0], dt);
+                GenrateSheetData0(wss[0], dt);
                 //GenerateMergeCells(wss[0]);
-                ///GenerateConditionalFormatting(wss[0], dxfId, t);
-                ///GenerateBackgroundColor(wss[0], t);
+                ///GenerateConditionalFormatting(wss[0], dxfId, dt);
+                GenerateBackgroundColor(wss[0], dt);
                 GeneratePageSetup(wss[0]);
 
                 ms = spreadsheet.CreateDocument();
             }
             return ms.ToArray();
         }
-        private static void GenerateColumns(XlWorksheet ws, Md.TableColumn[] cols)
+        
+        private static void GenerateColumns(XlWorksheet ws, DataTable dt)
         {
             uint cn = 1;
-            for (int ci = 0; ci < cols.Length; ci++)
+            foreach (DataColumn column in dt.Columns)
             {
-                Md.TableColumn col = cols[ci];
-                if (col.Width == null)
+                if (column.ExtendedProperties.ContainsKey("Width"))
                 {
-                    ws.AppendColumn(cn, cn, true);
+                    Double width = (Double)column.ExtendedProperties["Width"];
+                    ws.AppendColumn(cn, cn, false, true, width);
                 }
                 else
                 {
-                    Double.TryParse(col.Width, out Double width);
-                    ws.AppendColumn(cn, cn, false, true, width);
+                    ws.AppendColumn(cn, cn, true);
                 }
                 cn++;
             }
         }
-        public static void GenrateSheetData0(XlWorksheet ws, DataTable data)
+        
+        public static void GenrateSheetData0(XlWorksheet ws, DataTable dt)
         {
             UInt32 rowIndex = 0;
             UInt32 columnIndex = 0;
 
             // строка заголовка
             columnIndex = 0;
-            foreach (Md.TableColumn column in Md.Table1Columns)
+            foreach (DataColumn column in dt.Columns)
             {
                 String cellValueText = column.Caption;
                 ws.UpsertCell(rowIndex, columnIndex, 1, cellValueText); // CellValues.SharedString
@@ -166,12 +168,12 @@ namespace FNet.MDVReports.Models
             rowIndex++;
 
             // строки данных
-            for (Int32 ri = 0; ri < data.Rows.Count; ri++)
+            for (Int32 ri = 0; ri < dt.Rows.Count; ri++)
             {
                 columnIndex = 0;
-                foreach (Md.TableColumn column in Md.Table1Columns)
+                foreach (DataColumn column in dt.Columns)
                 {
-                    Object value = data.Rows[ri][column.ColumnName];
+                    Object value = dt.Rows[ri][column.ColumnName];
                     Type type = column.DataType;
                     AppendValueToSpreadsheetCell(ws, rowIndex, columnIndex, value, type);
                     columnIndex++;
@@ -249,6 +251,7 @@ namespace FNet.MDVReports.Models
                         }
                         */
         }
+        
         private static void AppendValueToSpreadsheetCell(XlWorksheet ws, UInt32 rowIndex, UInt32 columnIndex, Object value, Type type)
         {
             String cellValueText = null;
@@ -279,6 +282,7 @@ namespace FNet.MDVReports.Models
                 ws.UpsertCell(rowIndex, columnIndex, 2, cellValueText);
             }
         }
+        
         private static void GenerateMergeCells(XlWorksheet ws)
         {
             // объединение ячеек для заголовка
@@ -286,28 +290,28 @@ namespace FNet.MDVReports.Models
                 new String[] { "A1:C1", "A2:C2", "A3:C3" }
             );
         }
-        private static void GenerateConditionalFormatting(XlWorksheet ws, UInt32 dxfId, DataTable t)
+        
+        private static void GenerateConditionalFormatting(XlWorksheet ws, UInt32 dxfId, DataTable dt)
         {
-            ws.AppendConditionalFormatting(new String[] { "K3:K" + (t.Rows.Count + 2).ToString() }, dxfId, "Value(E3)<>K3");
-            ws.AppendConditionalFormatting(new String[] { "J3:J" + (t.Rows.Count + 2).ToString() }, dxfId, "D3<>J3");
+            ws.AppendConditionalFormatting(new String[] { "K3:K" + (dt.Rows.Count + 2).ToString() }, dxfId, "Value(E3)<>K3");
+            ws.AppendConditionalFormatting(new String[] { "J3:J" + (dt.Rows.Count + 2).ToString() }, dxfId, "D3<>J3");
         }
-        private static void GenerateBackgroundColor(XlWorksheet ws, DataTable t)
+ 
+        private static void GenerateBackgroundColor(XlWorksheet ws, DataTable dt)
         {
-            for (int ri = 0; ri < t.Rows.Count; ri++)
+            for (Int32 ri = 0; ri < dt.Rows.Count; ri++)
             {
-                DataRow dr = t.Rows[ri];
-                String bgColor = dr["bg_color"] as String;
-                if (!String.IsNullOrWhiteSpace(bgColor))
+                DataRow dr = dt.Rows[ri];
+                if ((String)dr[4] == "v")
                 {
-                    int ci = 0;
-                    foreach (Md.TableColumn col in Md.Table1Columns)
+                    for (int ci = 0; ci < dt.Columns.Count; ci++)
                     {
-                        ws.SetCellBackgroundColor((ri + 1), ci, bgColor); // !!! 1 - количество строк в шапке
-                        ci++;
+                        ws.SetCellBackgroundColor(ri + 1, ci, "ffcccc"); // + 1 - кол-во строк в заголовке
                     }
                 }
             }
         }
+
         private static void GeneratePageSetup(XlWorksheet ws)
         {
             ws.SetPageOrientationLandscape();

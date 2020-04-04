@@ -54,7 +54,7 @@
             {
                 foreach (DataRow dr in Model.Data.Rows)
                 {
-                    <tr class="@((Boolean)dr[4] ? "need-to-refresh" : "")">
+                    <tr class="@((String)dr[4] == "v" ? "need-to-refresh" : "")">
                         <td>@dr[0]</td>
                         <td>@dr[1]</td>
                         <td>@dr[2]</td>
